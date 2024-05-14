@@ -18,16 +18,18 @@ Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('h
 
 Route::get('/sign/up', [\App\Http\Controllers\SignController::class, 'register']);
 Route::get('/sign/in', [\App\Http\Controllers\SignController::class, 'login']);
-//
+
 Route::resource('gallery', \App\Http\Controllers\GalleryController::class);
 Route::resource('/users', \App\Http\Controllers\UserController::class);
 Route::resource('/contacts', \App\Http\Controllers\ContactsController::class, [
   'only' => ['index', 'create']
 ]);
 Route::resource('/comments', \App\Http\Controllers\CommentController::class);
-//
+
+Auth::routes();
+
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth']], function () {
   Route::resource('/', \App\Http\Controllers\Admin\HomeController::class);
-  Route::resource('/gallery', 'Controller');
-  Route::resource('/users', 'Controller');
+//  Route::resource('/gallery', 'Controller');
+//  Route::resource('/users', 'Controller');
 });
