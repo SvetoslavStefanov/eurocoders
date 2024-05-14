@@ -22,7 +22,15 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{{ route('logout') }}"
+              <a class="dropdown-item" href="{{ route('gallery.create') }}">
+                {{ __('Upload') }}
+              </a>
+
+              <a class="dropdown-item" href="{{ route('users.edit', auth()->user()) }}">
+                {{ __('Edit profile') }}
+              </a>
+
+              <a class="dropdown-item mt-3" href="{{ route('logout') }}"
                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 {{ __('Logout') }}
               </a>

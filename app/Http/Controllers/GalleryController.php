@@ -5,81 +5,71 @@ namespace App\Http\Controllers;
 use App\Models\Gallery;
 use Illuminate\Http\Request;
 
-class GalleryController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+class GalleryController extends Controller {
+  /**
+   * Instantiate a new controller instance.
+   *
+   * @return void
+   */
+  public function __construct() {
+    $this->middleware('auth')->except(['index', 'show']);
+  }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+  /**
+   * Display a listing of the resource.
+   *
+   */
+  public function index() {
+    //
+  }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+  /**
+   * Show the form for creating a new resource.
+   *
+   */
+  public function create() {
+    return view('gallery.create');
+  }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Gallery $gallery)
-    {
-        //
-    }
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param \Illuminate\Http\Request $request
+   */
+  public function store(Request $request) {
+    $request->validate([
+      'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:8000',
+    ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Gallery $gallery)
-    {
-        //
-    }
+    // Store the uploaded image
+    $image = $request->file('image');
+    $extenstion = $image->getClientOriginalExtension();
+    $imageName = time().'.'.$extenstion;
+    $image->move(public_path('uploads'), $imageName);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Gallery $gallery)
-    {
-        //
-    }
+    $image = Gallery::create([
+      'path' => ('uploads/' . $imageName),
+      'user_id' => auth()->user()->id
+    ]);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Gallery $gallery)
-    {
-        //
-    }
+    redirect()->route('gallery.show', $image)->withMessage(__('Your image has been uploaded'));
+  }
+
+  /**
+   * Display the specified resource.
+   *
+   * @param \App\Models\Gallery $gallery
+   */
+  public function show(Gallery $gallery) {
+    //
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param \App\Models\Gallery $gallery
+   */
+  public function destroy(Gallery $gallery) {
+    //
+  }
 }
