@@ -24,6 +24,10 @@ class Gallery extends Model {
     return $this->belongsTo(User::class, 'user_id');
   }
 
+  public function comments() {
+    return $this->hasMany(Comment::class);
+  }
+
   public static function uploadImage(\Illuminate\Http\UploadedFile $image): string|null {
     $imageName = self::generateImageFileName($image, false);
     $image->move(config('gallery.upload_dir_path'), $imageName);
