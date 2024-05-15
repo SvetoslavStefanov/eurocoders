@@ -3,16 +3,17 @@
 @section('content')
 
   <div class="container py-5">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-      <div class="col">
-        <div class="card shadow-sm">
-          <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
-            <rect width="100%" height="100%" fill="#55595c"></rect>
-            <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
-          </svg>
+    @foreach($images as $image)
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <div class="card shadow-sm">
+            <a href="<?=route('gallery.show', $image);?>">
+              <img src="<?=$image->thumb;?>" class="bd-placeholder-img card-img-top" />
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+    @endforeach
 
     @guest
     <hr class="mt-5 my-5"/>

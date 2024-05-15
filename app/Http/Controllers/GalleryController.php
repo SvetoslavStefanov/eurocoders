@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Gallery;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Intervention\Image\Facades\Image;
+use Symfony\Component\Console\Input\Input;
 
 class GalleryController extends Controller {
   /**
@@ -38,19 +41,21 @@ class GalleryController extends Controller {
    */
   public function store(Request $request) {
     $request->validate([
-      'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:8000',
+      'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:' . config('gallery.max_file_size_upload') * 1024,
     ]);
 
-    // Store the uploaded image
-    $image = $request->file('image');
-    $extenstion = $image->getClientOriginalExtension();
-    $imageName = time().'.'.$extenstion;
-    $image->move(public_path('uploads'), $imageName);
+    $path = Gallery::uploadImage($request->file('image'));
 
-    $image = Gallery::create([
-      'path' => ('uploads/' . $imageName),
-      'user_id' => auth()->user()->id
-    ]);
+    if ($path) {
+      $image = Gallery::create([
+        'path' => $path,
+        'user_id' => auth()->user()->id
+      ]);
+    } else {
+      throw ValidationException::withMessages([
+        'image' => [__('Cannot upload the file')],
+      ]);
+    }
 
     redirect()->route('gallery.show', $image)->withMessage(__('Your image has been uploaded'));
   }
