@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
 use Symfony\Component\Console\Input\Input;
+use Symfony\Component\HttpFoundation\Response;
 
 class GalleryController extends Controller {
   /**
@@ -23,7 +24,9 @@ class GalleryController extends Controller {
    *
    */
   public function index() {
-    //
+    $images = Gallery::orderBy('created_at', 'DESC')->paginate(10);
+
+    return view('gallery.index',['images' => $images]);
   }
 
   /**
@@ -57,7 +60,7 @@ class GalleryController extends Controller {
       ]);
     }
 
-    redirect()->route('gallery.show', $image)->withMessage(__('Your image has been uploaded'));
+    return redirect()->route('gallery.show', $image)->withMessage(__('Your image has been uploaded'));
   }
 
   /**
@@ -66,7 +69,7 @@ class GalleryController extends Controller {
    * @param \App\Models\Gallery $gallery
    */
   public function show(Gallery $gallery) {
-    //
+    return view('gallery.show', ['image' => $gallery]);
   }
 
   /**
@@ -75,6 +78,10 @@ class GalleryController extends Controller {
    * @param \App\Models\Gallery $gallery
    */
   public function destroy(Gallery $gallery) {
-    //
+    abort_if(auth()->user()->id !== $gallery->user_id, Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+    $gallery->delete();
+
+    return redirect()->route('gallery.index')->withMessage(__('Your image has been deleted'));
   }
 }

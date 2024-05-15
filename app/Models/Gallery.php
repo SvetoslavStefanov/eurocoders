@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
 class Gallery extends Model {
@@ -29,7 +30,7 @@ class Gallery extends Model {
 
     Image::make(config('gallery.upload_dir_path') . $imageName)
       ->resize(config('gallery.thumb_size')[0], config('gallery.thumb_size')[0])
-      ->save(config('gallery.upload_dir_path') . self::generateImageFileName($image, true));
+      ->save(config('gallery.upload_dir_path') . self::getThumbPathFromImagePath($imageName, auth()->user()->id));
 
     return  $imageName;
   }
@@ -40,11 +41,27 @@ class Gallery extends Model {
     return auth()->user()->id . $prefix . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
   }
 
-  public function getThumbAttribute(): string {
-    $pathItems = explode('_', $this->path);
+  private static function getThumbPathFromImagePath(string $path, int $userId): string {
+    $pathItems = explode('_', $path);
     array_shift($pathItems);
     $path = join('_', ($pathItems));
 
-    return config('gallery.upload_dir') . $this->user_id . '_' . config('gallery.thumb_size')[0] . '_' . config('gallery.thumb_size')[1] . '_' . $path;
+    return $userId . '_' . config('gallery.thumb_size')[0] . '_' . config('gallery.thumb_size')[1] . '_' . $path;
+
+  }
+
+  public function getThumbAttribute(): string {
+    return config('gallery.upload_dir') . self::getThumbPathFromImagePath($this->path, $this->user_id);
+  }
+
+  public function getFullPathAttribute(): string {
+    return config('gallery.upload_dir') . $this->path;
+  }
+
+  public function delete() {
+    File::delete($this->fullPath);
+    File::delete($this->thumb);
+
+    parent::delete();
   }
 }

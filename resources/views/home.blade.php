@@ -3,17 +3,7 @@
 @section('content')
 
   <div class="container py-5">
-    @foreach($images as $image)
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <div class="card shadow-sm">
-            <a href="<?=route('gallery.show', $image);?>">
-              <img src="<?=$image->thumb;?>" class="bd-placeholder-img card-img-top" />
-            </a>
-          </div>
-        </div>
-      </div>
-    @endforeach
+    {{ view('partials.gallery', ['images' => $images]) }}
 
     @guest
     <hr class="mt-5 my-5"/>
