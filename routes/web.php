@@ -16,20 +16,17 @@ use Illuminate\Support\Facades\Route;
 //
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/sign/up', [\App\Http\Controllers\SignController::class, 'register']);
-Route::get('/sign/in', [\App\Http\Controllers\SignController::class, 'login']);
-
 Route::resource('gallery', \App\Http\Controllers\GalleryController::class);
 Route::resource('/users', \App\Http\Controllers\UserController::class);
-Route::resource('/contacts', \App\Http\Controllers\ContactsController::class, [
-  'only' => ['index', 'create']
-]);
-Route::resource('/comments', \App\Http\Controllers\CommentController::class);
+Route::resource('comments', \App\Http\Controllers\CommentController::class)->only(['store', 'update', 'destroy']);
+Route::resource('contacts', \App\Http\Controllers\ContactsController::class)->only(['store', 'index']);
 
 Auth::routes();
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'admin']], function () {
   Route::resource('/', \App\Http\Controllers\Admin\HomeController::class);
-//  Route::resource('/gallery', 'Controller');
-//  Route::resource('/users', 'Controller');
+  Route::resource('/gallery', \App\Http\Controllers\Admin\GalleryController::class);
+  Route::resource('/users', \App\Http\Controllers\Admin\UsersController::class);
+
+  Route::get('/gallery/user/{userId}', [\App\Http\Controllers\Admin\GalleryController::class, 'index'])->name('gallery.user');
 });

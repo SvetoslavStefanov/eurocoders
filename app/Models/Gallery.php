@@ -68,4 +68,8 @@ class Gallery extends Model {
 
     parent::delete();
   }
+
+  public function canAddNewComments(): bool {
+    return $this->comments->count() <= 10;
+  }
 }

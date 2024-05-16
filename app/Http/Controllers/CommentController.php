@@ -3,19 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CommentController extends Controller {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index() {
-    //
+  public function __construct() {
+    $this->middleware('auth');
   }
-
   /**
    * Store a newly created resource in storage.
    *
@@ -23,6 +18,9 @@ class CommentController extends Controller {
    * @return \Illuminate\Http\Response
    */
   public function store(Request $request) {
+    if (!Gallery::findOrFail($request->gallery_id)->canAddNewComments()) {
+      return back()->withErrors(['image' => __('You have reached the maximum number of comments')]);
+    }
     $request->validate([
       'content' => 'string|required|max:500',
       'gallery_id' => 'required|exists:gallery,id'
@@ -38,26 +36,6 @@ class CommentController extends Controller {
   }
 
   /**
-   * Display the specified resource.
-   *
-   * @param \App\Models\Comment $comment
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Comment $comment) {
-    //
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param \App\Models\Comment $comment
-   * @return \Illuminate\Http\Response
-   */
-  public function edit(Comment $comment) {
-    //
-  }
-
-  /**
    * Update the specified resource in storage.
    *
    * @param \Illuminate\Http\Request $request
@@ -65,7 +43,17 @@ class CommentController extends Controller {
    * @return \Illuminate\Http\Response
    */
   public function update(Request $request, Comment $comment) {
-    //
+    abort_if(auth()->user()->id !== $comment->user_id && auth()->user()->role !== 'admin', Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+    $request->validate([
+      'content' => 'string|required|max:500',
+      'gallery_id' => 'required|exists:gallery,id'
+    ]);
+
+    $comment->fill($request->all());
+    $comment->save();
+
+    return redirect()->back()->with('success', 'Comment updated successfully.');
   }
 
   /**
@@ -75,7 +63,7 @@ class CommentController extends Controller {
    * @return \Illuminate\Http\Response
    */
   public function destroy(Comment $comment) {
-    abort_if(auth()->user()->id !== $comment->user_id, Response::HTTP_FORBIDDEN, '403 Forbidden');
+    abort_if(auth()->user()->id !== $comment->user_id && auth()->user()->role !== 'admin', Response::HTTP_FORBIDDEN, '403 Forbidden');
 
     $comment->delete();
 

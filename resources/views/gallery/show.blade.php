@@ -15,7 +15,7 @@
               </span>
             </p>
 
-            @include('partials.destroy-item', ['url' => route('gallery.destroy', $image), 'previous_page' => url()->previous(), 'name' => 'gallery-form'])
+            @include('partials.destroy-item', ['url' => route('gallery.destroy', $image), 'previous_page' => route('gallery.index'), 'name' => 'gallery-form'])
           @endif
         </div>
         <div class="bg-light shadow-sm mx-auto" style="width: 80%; border-radius: 21px 21px 0 0;">

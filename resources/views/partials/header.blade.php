@@ -30,6 +30,12 @@
                 {{ __('Edit profile') }}
               </a>
 
+              @if(Auth::check() && Auth::user()->role === 'admin')
+                <a class="dropdown-item text-bg-danger" href="{{ route('admin.index') }}">
+                  {{ __('Admin panel') }}
+                </a>
+              @endif
+
               <a class="dropdown-item mt-3" href="{{ route('logout') }}"
                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 {{ __('Logout') }}
@@ -44,3 +50,4 @@
     </div>
   </div>
 </header>
+<!-- TODO: show the $message variable here. Hide it after 10 seconds -->

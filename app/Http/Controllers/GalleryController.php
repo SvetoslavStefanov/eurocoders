@@ -43,6 +43,9 @@ class GalleryController extends Controller {
    * @param \Illuminate\Http\Request $request
    */
   public function store(Request $request) {
+    if (!auth()->user()->canAddNewImage()) {
+      return back()->withErrors(['image' => __('You have reached the maximum number of images')]);
+    }
     $request->validate([
       'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:' . config('gallery.max_file_size_upload') * 1024,
     ]);
@@ -77,11 +80,11 @@ class GalleryController extends Controller {
    *
    * @param \App\Models\Gallery $gallery
    */
-  public function destroy(Gallery $gallery) {
-    abort_if(auth()->user()->id !== $gallery->user_id, Response::HTTP_FORBIDDEN, '403 Forbidden');
+  public function destroy(Gallery $gallery, Request $request) {
+    abort_if(auth()->user()->id !== $gallery->user_id && auth()->user()->role !== 'admin', Response::HTTP_FORBIDDEN, '403 Forbidden');
 
     $gallery->delete();
 
-    return redirect()->route('gallery.index')->withMessage(__('Your image has been deleted'));
+    return redirect($request->previous_page)->withMessage(__('Your image has been deleted'));
   }
 }

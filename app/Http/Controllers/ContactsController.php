@@ -5,81 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Contacts;
 use Illuminate\Http\Request;
 
-class ContactsController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+class ContactsController extends Controller {
+  /**
+   * Display a listing of the resource.
+   */
+  public function index() {
+    return view('contacts.index');
+  }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param \Illuminate\Http\Request $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(Request $request) {
+    $request->validate([
+      'name' => 'required|string|max:255',
+      'email' => 'required|email|max:255',
+      'phone' => 'required|string|max:255',
+      'content' => 'required|string|max:1500|min:10',
+    ]);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    Contacts::create($request->all());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Contacts  $contacts
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Contacts $contacts)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Contacts  $contacts
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Contacts $contacts)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Contacts  $contacts
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Contacts $contacts)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Contacts  $contacts
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Contacts $contacts)
-    {
-        //
-    }
+    return redirect()->route('contacts.index')->with('success', __('Your message has been sent successfully'));
+  }
 }

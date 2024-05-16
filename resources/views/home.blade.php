@@ -1,8 +1,9 @@
 @extends('layouts.main')
 @section('title', 'Home')
 @section('content')
-
   <div class="container py-5">
+    <h1>{{ __('Welcome to Eurocoders') }}</h1>
+    <p>{{ __('Where you could see our top programmer\'s images and tell them how beautiful they are.') }}</p>
     {{ view('partials.gallery', ['images' => $images]) }}
 
     @guest
@@ -10,9 +11,9 @@
 
     <div class="row">
       <div class="col-3 hstack gap-3 mx-auto">
-        <h3 data-sign-action="login">Login</h3>
+        <h3 data-sign-action="login">{{ __('Login') }}</h3>
         <div class="vr"></div>
-        <h3 data-sign-action="register">Sign Up</h3>
+        <h3 data-sign-action="register">{{ __('Register') }}</h3>
       </div>
 
       <div class="row mt-4 py-5">
